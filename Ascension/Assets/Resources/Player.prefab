@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 2390253689560466595}
   - component: {fileID: 8634906624151635520}
   - component: {fileID: 7602284839806128927}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -216,10 +216,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 5
-  curAmmo: 25
-  maxAmmo: 25
-  bulletSpeed: 100
-  shootRate: 1
+  curAmmo: 100
+  maxAmmo: 100
+  bulletRange: 100
+  shootRate: 0.1
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 64
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 128
   bulletPrefab: {fileID: 5427455784750544602, guid: a68825aed126ee44aa051d6817c3a451, type: 3}
   bulletSpawnPos: {fileID: 4668802318768490181}
   player: {fileID: 5210928506976309859}
@@ -457,9 +463,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6757256882113831103, guid: 5546fa82def4d294abb58e960a61e54a, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5568371526223589888, guid: 5546fa82def4d294abb58e960a61e54a, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 5546fa82def4d294abb58e960a61e54a, type: 3}
       propertyPath: m_Name
       value: BerettaM9
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5546fa82def4d294abb58e960a61e54a, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1214824004972775095, guid: 5546fa82def4d294abb58e960a61e54a, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4662503080566256520, guid: 5546fa82def4d294abb58e960a61e54a, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5530701255766440318, guid: 5546fa82def4d294abb58e960a61e54a, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -534,12 +564,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5568371526223589888, guid: 24dd53dcbd09a794c9fd23e701fde09c, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 635547659545568360, guid: 24dd53dcbd09a794c9fd23e701fde09c, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 24dd53dcbd09a794c9fd23e701fde09c, type: 3}
       propertyPath: m_Name
       value: BerettaM82
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 24dd53dcbd09a794c9fd23e701fde09c, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 24dd53dcbd09a794c9fd23e701fde09c, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8513859187771203891, guid: 24dd53dcbd09a794c9fd23e701fde09c, type: 3}
+      propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

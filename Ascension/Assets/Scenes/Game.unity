@@ -1645,6 +1645,10 @@ PrefabInstance:
       value: Terrain
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c0547108923abaa478ae395685ed94ea, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c0547108923abaa478ae395685ed94ea, type: 3}
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
@@ -4686,6 +4690,67 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4817491228754984147, guid: 60406b1fb361455478d6ced98cdf1b51, type: 3}
   m_PrefabInstance: {fileID: 3693515936950973022}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6454481555011694934
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -22.859442
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.3828
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 441641295979292863, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 966821223135539717, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_Name
+      value: BerettaM82
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914256549370645507, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 392ab3822073730478ea885db0566546, type: 3}
 --- !u!1001 &6811655695134240361
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4816,3 +4881,4 @@ SceneRoots:
   - {fileID: 1348413626}
   - {fileID: 437973166}
   - {fileID: 1055047286}
+  - {fileID: 6454481555011694934}

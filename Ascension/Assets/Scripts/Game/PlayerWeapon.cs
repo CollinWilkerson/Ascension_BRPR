@@ -40,29 +40,38 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
 
         GameUI.instance.UpdateAmmoText();
 
-        //if a ray does not hit an obstruction
-        if (!Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, bulletRange, obstructionMask))
-        {
-            //if the Raycast hits a player
-            if (Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, bulletRange, targetMask))
-            {
-                //gets the shot player
-                RaycastHit hitPlayer;
-                Ray shotRay = new Ray(Camera.main.transform.forward, bulletSpawnPos.position);
-                Physics.Raycast(shotRay, out hitPlayer);
 
+        RaycastHit rayHit;
+
+        //if a ray does not hit an obstruction
+        if (!Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit, bulletRange, obstructionMask))
+        {
+            //Debug.Log("Start: " + bulletSpawnPos.position + " direction: " + Camera.main.transform.forward + " range: " + bulletRange);
+            Debug.Log("No obstruction hit");
+            //if the Raycast hits a player
+            if (Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit,bulletRange, targetMask))
+            {
+
+                Debug.Log("Player hit");
                 //this vomit deals damage to the player we shot.
-                player.photonView.RPC("TakeDamage", hitPlayer.collider.gameObject.GetComponent<PlayerController>().photonPlayer,
+                player.photonView.RPC("TakeDamage", rayHit.collider.gameObject.GetComponent<PlayerController>().photonPlayer,
                     player.id, damage);
 
                 //displays the shot
-                Debug.DrawLine(shotRay.origin, hitPlayer.point, Color.white, 0.5f);
+                Debug.DrawLine(bulletSpawnPos.position, rayHit.point, Color.red, 0.5f);
             }
             else
             {
+
+                Debug.Log("No player hit");
                 //draws line to end of range
-                Debug.DrawLine(bulletSpawnPos.position, bulletSpawnPos.TransformDirection(Camera.main.transform.forward) * bulletRange, Color.white, 0.5f);
+                Debug.DrawLine(bulletSpawnPos.position, bulletSpawnPos.TransformDirection(Camera.main.transform.forward) * bulletRange, Color.red, 0.5f);
             }
+        }
+        else
+        {
+            Debug.Log("Obstruction hit");
+            Debug.DrawLine(bulletSpawnPos.position, rayHit.point, Color.red, 0.5f);
         }
 
         //player.photonView.RPC("SpawnBullet", RpcTarget.All, bulletSpawnPos.transform.position, Camera.main.transform.forward);
