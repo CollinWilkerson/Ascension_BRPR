@@ -33,6 +33,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     public PlayerController player;
 
     private LineRenderer bulletTrail;
+    private float sightSpeed = 10f;
 
     private void Awake()
     {
@@ -154,21 +155,29 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         {
             if(currentGun == Handgun)
             {
-                currentGun.transform.localPosition = sightPositionHG;
+                //Lerp allows the motion to be smoothed, but can only take floats so it gets chunky fast
+                currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionHG, Time.deltaTime * sightSpeed);
             }
             else if (currentGun == Sniper)
             {
-                currentGun.transform.localPosition = sightPositionS;
+                currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionS, Time.deltaTime * sightSpeed);
             }
         }
         else
         {
-            currentGun.transform.localPosition = hipPosition;
+            currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, hipPosition, Time.deltaTime * sightSpeed);
         }
     }
 
     private void DisableBulletTrail()
     {
         bulletTrail.enabled = false;
+    }
+
+    private Vector3 V3Lerp(Vector3 currentPos, Vector3 targetPos, float t)
+    {
+        return new Vector3(Mathf.Lerp(currentPos.x, targetPos.x, t),
+                    Mathf.Lerp(currentPos.y, targetPos.y, t),
+                    Mathf.Lerp(currentPos.z, targetPos.z, t));
     }
 }
