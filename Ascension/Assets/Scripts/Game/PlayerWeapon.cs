@@ -12,19 +12,34 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     public int maxAmmo;
     public float bulletRange;
     public float shootRate;
+
+    [Header("Ray Masks")]
     public LayerMask targetMask;
     public LayerMask obstructionMask;
 
+    [Header("Guns")]
+    private GameObject currentGun;
+    private Vector3 hipPosition = new Vector3(0.5f,-0.45f,1f);
+    private Vector3 sightPositionHG = new Vector3(0f, -0.22f, 0.65f);
+    private Vector3 sightPositionS = new Vector3(0f, -0.25f, 1f);
+    public GameObject Handgun;
+    public GameObject Sniper;
+
     private float lastShootTime;
     
-    public GameObject bulletPrefab;
+    //public GameObject bulletPrefab;
     public Transform bulletSpawnPos;
 
     public PlayerController player;
 
+    private LineRenderer bulletTrail;
+
     private void Awake()
     {
-        player.GetComponent<PlayerController>();
+        bulletTrail = player.GetComponent<LineRenderer>();
+        bulletTrail.positionCount = 2;
+        bulletTrail.enabled = false;
+        currentGun = Handgun;
     }
 
     public void TryShoot()
@@ -44,36 +59,54 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         RaycastHit rayHit;
 
         //if a ray does not hit an obstruction
-        if (!Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit, bulletRange, obstructionMask))
+        //change to if we hit the player then if we hit an obstruction
+        if (Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit, bulletRange, targetMask))
         {
             //Debug.Log("Start: " + bulletSpawnPos.position + " direction: " + Camera.main.transform.forward + " range: " + bulletRange);
-            Debug.Log("No obstruction hit");
+            Debug.Log("Player hit");
             //if the Raycast hits a player
-            if (Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit,bulletRange, targetMask))
+            if (!Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, Vector3.Distance(bulletSpawnPos.position, rayHit.point), obstructionMask))
             {
-
-                Debug.Log("Player hit");
+                PlayerController hitPlayer = rayHit.collider.gameObject.GetComponent<PlayerController>();
+                Debug.Log("No Obstruction");
                 //this vomit deals damage to the player we shot.
-                player.photonView.RPC("TakeDamage", rayHit.collider.gameObject.GetComponent<PlayerController>().photonPlayer,
-                    player.id, damage);
+                hitPlayer.photonView.RPC("TakeDamage", hitPlayer.photonPlayer, player.id, damage);
 
-                //displays the shot
-                Debug.DrawLine(bulletSpawnPos.position, rayHit.point, Color.red, 0.5f);
+                //this only works on the editor screen
+                //Debug.DrawLine(bulletSpawnPos.position, rayHit.point, Color.red, 0.5f);
+                Vector3[] linePostitions = new Vector3[2];
+                linePostitions[0] = bulletSpawnPos.position;
+                linePostitions[1] = rayHit.point;
+                bulletTrail.enabled = true;
+                bulletTrail.SetPositions(linePostitions);
+                Invoke("DisableBulletTrail", 0.2f);
             }
             else
             {
-
-                Debug.Log("No player hit");
-                //draws line to end of range
-                Debug.DrawLine(bulletSpawnPos.position, bulletSpawnPos.TransformDirection(Camera.main.transform.forward) * bulletRange, Color.red, 0.5f);
+                Debug.Log("Obstruction Hit");
             }
+        }
+        else if(Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit, bulletRange, obstructionMask))
+        {
+            Debug.Log("Obstruction hit at: " + rayHit.point);
+
+            Vector3[] linePostitions = new Vector3[2];
+            linePostitions[0] = bulletSpawnPos.position;
+            linePostitions[1] = rayHit.point;
+            bulletTrail.enabled = true;
+            bulletTrail.SetPositions(linePostitions);
+            Invoke("DisableBulletTrail", 0.2f);
         }
         else
         {
-            Debug.Log("Obstruction hit");
-            Debug.DrawLine(bulletSpawnPos.position, rayHit.point, Color.red, 0.5f);
+            Vector3[] linePostitions = new Vector3[2];
+            linePostitions[0] = bulletSpawnPos.position;
+            linePostitions[1] = Camera.main.transform.forward * bulletRange;
+            bulletTrail.enabled = true;
+            bulletTrail.SetPositions(linePostitions);
+            Invoke("DisableBulletTrail", 0.2f);
+            Debug.Log("No Hit");
         }
-
         //player.photonView.RPC("SpawnBullet", RpcTarget.All, bulletSpawnPos.transform.position, Camera.main.transform.forward);
     }
 
@@ -99,8 +132,43 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         GameUI.instance.UpdateAmmoText();
     }
 
-    public void getGun(string gunName, int newDamage, int newMax, int newRate)
+    [PunRPC]
+    public void GetGun(string gunName = "Handgun", int newDamage = 5, int newMax = 100, float newRate = 0.1f, int newRange = 10)
     {
+        currentGun.SetActive(false);
+        if (gunName == "Sniper")
+        {
+            Sniper.SetActive(true);
+            currentGun = Sniper;
+        }
 
+        damage = newDamage;
+        maxAmmo = newMax;
+        shootRate = newRate;
+        bulletRange = newRange;
+    }
+
+    public void AimDownSights(bool sights)
+    {
+        if (sights)
+        {
+            if(currentGun == Handgun)
+            {
+                currentGun.transform.localPosition = sightPositionHG;
+            }
+            else if (currentGun == Sniper)
+            {
+                currentGun.transform.localPosition = sightPositionS;
+            }
+        }
+        else
+        {
+            currentGun.transform.localPosition = hipPosition;
+        }
+    }
+
+    private void DisableBulletTrail()
+    {
+        bulletTrail.enabled = false;
     }
 }

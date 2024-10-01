@@ -4470,7 +4470,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2013088332
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4742,9 +4742,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: BerettaM82
       objectReference: {fileID: 0}
-    - target: {fileID: 8914256549370645507, guid: 392ab3822073730478ea885db0566546, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
+    - target: {fileID: 9087628182051447272, guid: 392ab3822073730478ea885db0566546, type: 3}
+      propertyPath: sceneViewId
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

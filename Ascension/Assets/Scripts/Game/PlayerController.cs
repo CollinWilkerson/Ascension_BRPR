@@ -51,6 +51,15 @@ public class PlayerController : MonoBehaviourPun
         {
             weapon.TryShoot();
         }
+
+        if (Input.GetMouseButton(1))
+        {
+            weapon.AimDownSights(true);
+        }
+        else
+        {
+            weapon.AimDownSights(false);
+        }
     }
 
     private void Move()
@@ -104,6 +113,7 @@ public class PlayerController : MonoBehaviourPun
         {
             return;
         }
+        Debug.Log(photonPlayer.NickName + " took " + damage + " points of damage");
 
         curHp -= damage;
         curAttackerId = attackerId;
