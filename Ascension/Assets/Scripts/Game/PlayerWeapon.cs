@@ -20,6 +20,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     [Header("Guns")]
     private GameObject currentGun;
     private float defaultZoom = 60f;
+    private float sightsZoom = 40f;
     private float sniperZoom = 10f;
     private float initialSensitivity;
     private float sniperSensitivity;
@@ -27,6 +28,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     private Vector3 hipPosition = new Vector3(0.5f,-0.45f,1f);
     private Vector3 sightPositionHG = new Vector3(0f, -0.22f, 0.65f);
     private Vector3 sightPositionS = new Vector3(0f, -0.33f, 1f);
+    private Vector3 sightPositionSMG = new Vector3(0f, -0.08f, 1f);
     public GameObject Handgun;
     public GameObject Sniper;
     public GameObject Smg;
@@ -61,6 +63,13 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         //must have bullets and not exceed fire rate to shoot
         if(curAmmo <= 0 || Time.time - lastShootTime < shootRate)
         {
+            /*
+             * this executes if the shoot rate is too low adjust
+            if(currentGun != Handgun)
+            {
+                player.photonView.RPC("GetGun", player.photonPlayer, "Handgun", 3, 999, 0.5f, 30);
+            }
+            */
             return;
         }
 
@@ -147,7 +156,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void GetGun(string gunName = "Handgun", int newDamage = 5, int newMax = 100, float newRate = 0.1f, int newRange = 30)
+    public void GetGun(string gunName = "Handgun", int newDamage = 3, int newMax = 999, float newRate = 0.5f, int newRange = 30)
     {
         currentGun.SetActive(false);
         if (gunName == "Handgun")
@@ -184,6 +193,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
             {
                 //Lerp allows the motion to be smoothed, but can only take floats so it gets chunky fast
                 currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionHG, Time.deltaTime * sightSpeed);
+                Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sightsZoom, Time.deltaTime * sightSpeed);
             }
             else if (currentGun == Sniper)
             {
@@ -191,6 +201,11 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
                 Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sniperZoom, Time.deltaTime * sightSpeed);
                 //mainCamController.sensX = sniperSensitivity;
                 //mainCamController.sensY = sniperSensitivity;
+            }
+            else if (currentGun == Smg)
+            {
+                currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionSMG, Time.deltaTime * sightSpeed);
+                Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sightsZoom, Time.deltaTime * sightSpeed);
             }
         }
         else
