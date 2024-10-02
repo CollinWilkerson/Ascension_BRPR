@@ -19,16 +19,25 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
 
     [Header("Guns")]
     private GameObject currentGun;
+    private float defaultZoom = 60f;
+    private float sniperZoom = 10f;
+    private float initialSensitivity;
+    private float sniperSensitivity;
+    private CameraController mainCamController;
     private Vector3 hipPosition = new Vector3(0.5f,-0.45f,1f);
     private Vector3 sightPositionHG = new Vector3(0f, -0.22f, 0.65f);
-    private Vector3 sightPositionS = new Vector3(0f, -0.25f, 1f);
+    private Vector3 sightPositionS = new Vector3(0f, -0.33f, 1f);
     public GameObject Handgun;
     public GameObject Sniper;
+    public GameObject Smg;
 
     private float lastShootTime;
-    
+
     //public GameObject bulletPrefab;
-    public Transform bulletSpawnPos;
+    private Transform bulletSpawnPos;
+    public Transform bulletSpawnPosHG;
+    public Transform bulletSpawnPosS;
+    public Transform bulletSpawnPosSMG;
 
     public PlayerController player;
 
@@ -41,6 +50,10 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         bulletTrail.positionCount = 2;
         bulletTrail.enabled = false;
         currentGun = Handgun;
+        bulletSpawnPos = bulletSpawnPosHG;
+        mainCamController = Camera.main.GetComponent<CameraController>();
+        //initialSensitivity = mainCamController.sensX;
+        //sniperSensitivity = initialSensitivity / 4;
     }
 
     public void TryShoot()
@@ -134,17 +147,31 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void GetGun(string gunName = "Handgun", int newDamage = 5, int newMax = 100, float newRate = 0.1f, int newRange = 10)
+    public void GetGun(string gunName = "Handgun", int newDamage = 5, int newMax = 100, float newRate = 0.1f, int newRange = 30)
     {
         currentGun.SetActive(false);
+        if (gunName == "Handgun")
+        {
+            Handgun.SetActive(true);
+            currentGun = Handgun;
+            bulletSpawnPos = bulletSpawnPosHG;
+        }
         if (gunName == "Sniper")
         {
             Sniper.SetActive(true);
             currentGun = Sniper;
+            bulletSpawnPos = bulletSpawnPosS;
+        }
+        if (gunName == "SMG")
+        {
+            Smg.SetActive(true);
+            currentGun = Smg;
+            bulletSpawnPos = bulletSpawnPosSMG;
         }
 
         damage = newDamage;
         maxAmmo = newMax;
+        curAmmo = maxAmmo;
         shootRate = newRate;
         bulletRange = newRange;
     }
@@ -161,11 +188,23 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
             else if (currentGun == Sniper)
             {
                 currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionS, Time.deltaTime * sightSpeed);
+                Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sniperZoom, Time.deltaTime * sightSpeed);
+                //mainCamController.sensX = sniperSensitivity;
+                //mainCamController.sensY = sniperSensitivity;
             }
         }
         else
         {
             currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, hipPosition, Time.deltaTime * sightSpeed);
+            if(Camera.main.fieldOfView != defaultZoom)
+            {
+                Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, defaultZoom, Time.deltaTime * sightSpeed);
+            }
+            if(mainCamController.sensX != initialSensitivity)
+            {
+                //mainCamController.sensX = initialSensitivity;
+                //mainCamController.sensY = initialSensitivity;
+            }
         }
     }
 

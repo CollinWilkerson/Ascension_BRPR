@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviourPun
             TryJump();
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
             weapon.TryShoot();
         }
