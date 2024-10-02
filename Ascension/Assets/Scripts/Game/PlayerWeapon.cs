@@ -122,12 +122,14 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         }
         else
         {
+            /*
             Vector3[] linePostitions = new Vector3[2];
             linePostitions[0] = bulletSpawnPos.position;
             linePostitions[1] = Camera.main.transform.forward * bulletRange;
             bulletTrail.enabled = true;
             bulletTrail.SetPositions(linePostitions);
             Invoke("DisableBulletTrail", 0.2f);
+            */
             Debug.Log("No Hit");
         }
         //player.photonView.RPC("SpawnBullet", RpcTarget.All, bulletSpawnPos.transform.position, Camera.main.transform.forward);
