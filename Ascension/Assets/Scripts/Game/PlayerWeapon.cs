@@ -25,13 +25,16 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     private float initialSensitivity;
     private float sniperSensitivity;
     private CameraController mainCamController;
-    private Vector3 hipPosition = new Vector3(0.5f,-0.45f,1f);
+    private Vector3 hipPosition = new Vector3(0.5f, -0.45f, 1f);
+    private Vector3 hipPositionSg = new Vector3(0.5f, -0.267f, 1.6f);
     private Vector3 sightPositionHG = new Vector3(0f, -0.22f, 0.65f);
     private Vector3 sightPositionS = new Vector3(0f, -0.33f, 1f);
     private Vector3 sightPositionSMG = new Vector3(0f, -0.08f, 1f);
+    private Vector3 sightPositionSg = new Vector3(0f, -0.04f, 1.25f);
     public GameObject Handgun;
     public GameObject Sniper;
     public GameObject Smg;
+    public GameObject Shotgun;
 
     private float lastShootTime;
 
@@ -40,6 +43,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     public Transform bulletSpawnPosHG;
     public Transform bulletSpawnPosS;
     public Transform bulletSpawnPosSMG;
+    public Transform bulletSpawnPosSg;
 
     public PlayerController player;
 
@@ -61,15 +65,13 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     public void TryShoot()
     {
         //must have bullets and not exceed fire rate to shoot
-        if(curAmmo <= 0 || Time.time - lastShootTime < shootRate)
+        if(curAmmo <= 0)
         {
-            /*
-             * this executes if the shoot rate is too low adjust
-            if(currentGun != Handgun)
-            {
-                player.photonView.RPC("GetGun", player.photonPlayer, "Handgun", 3, 999, 0.5f, 30);
-            }
-            */
+            player.photonView.RPC("GetGun", player.photonPlayer, "Handgun", 1, 999, 0.5f, 30);
+            return;
+        }
+        else if (Time.time - lastShootTime < shootRate)
+        {
             return;
         }
 
@@ -86,14 +88,23 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         if (Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit, bulletRange, targetMask))
         {
             //Debug.Log("Start: " + bulletSpawnPos.position + " direction: " + Camera.main.transform.forward + " range: " + bulletRange);
-            Debug.Log("Player hit");
+            //Debug.Log("Player hit");
             //if the Raycast hits a player
             if (!Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, Vector3.Distance(bulletSpawnPos.position, rayHit.point), obstructionMask))
             {
+                int scaledDamage;
                 PlayerController hitPlayer = rayHit.collider.gameObject.GetComponent<PlayerController>();
-                Debug.Log("No Obstruction");
-                //this vomit deals damage to the player we shot.
-                hitPlayer.photonView.RPC("TakeDamage", hitPlayer.photonPlayer, player.id, damage);
+                //Debug.Log("No Obstruction");
+
+                if(currentGun == Shotgun)
+                {
+                    scaledDamage = (int)(damage / Vector3.Distance(bulletSpawnPos.position, rayHit.point));
+                }
+                else
+                {
+                    scaledDamage = damage;
+                }
+                hitPlayer.photonView.RPC("TakeDamage", hitPlayer.photonPlayer, player.id, scaledDamage);
 
                 //this only works on the editor screen
                 //Debug.DrawLine(bulletSpawnPos.position, rayHit.point, Color.red, 0.5f);
@@ -106,12 +117,12 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
             }
             else
             {
-                Debug.Log("Obstruction Hit");
+                //Debug.Log("Obstruction Hit");
             }
         }
         else if(Physics.Raycast(bulletSpawnPos.position, Camera.main.transform.forward, out rayHit, bulletRange, obstructionMask))
         {
-            Debug.Log("Obstruction hit at: " + rayHit.point);
+            //Debug.Log("Obstruction hit at: " + rayHit.point);
 
             Vector3[] linePostitions = new Vector3[2];
             linePostitions[0] = bulletSpawnPos.position;
@@ -130,7 +141,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
             bulletTrail.SetPositions(linePostitions);
             Invoke("DisableBulletTrail", 0.2f);
             */
-            Debug.Log("No Hit");
+           // Debug.Log("No Hit");
         }
         //player.photonView.RPC("SpawnBullet", RpcTarget.All, bulletSpawnPos.transform.position, Camera.main.transform.forward);
     }
@@ -152,7 +163,8 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
     [PunRPC]
     public void GiveAmmo(int ammoToGive)
     {
-        curAmmo = Mathf.Clamp(curAmmo + ammoToGive, 0, maxAmmo);
+        //curAmmo = Mathf.Clamp(curAmmo + ammoToGive, 0, maxAmmo);
+        curAmmo = maxAmmo;
 
         GameUI.instance.UpdateAmmoText();
     }
@@ -167,17 +179,23 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
             currentGun = Handgun;
             bulletSpawnPos = bulletSpawnPosHG;
         }
-        if (gunName == "Sniper")
+        else if (gunName == "Sniper")
         {
             Sniper.SetActive(true);
             currentGun = Sniper;
             bulletSpawnPos = bulletSpawnPosS;
         }
-        if (gunName == "SMG")
+        else if (gunName == "SMG")
         {
             Smg.SetActive(true);
             currentGun = Smg;
             bulletSpawnPos = bulletSpawnPosSMG;
+        }
+        else if (gunName == "Shotgun")
+        {
+            Shotgun.SetActive(true);
+            currentGun = Shotgun;
+            bulletSpawnPos = bulletSpawnPosSg;
         }
 
         damage = newDamage;
@@ -185,6 +203,8 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         curAmmo = maxAmmo;
         shootRate = newRate;
         bulletRange = newRange;
+
+        GameUI.instance.UpdateAmmoText();
     }
 
     public void AimDownSights(bool sights)
@@ -193,7 +213,7 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         {
             if(currentGun == Handgun)
             {
-                //Lerp allows the motion to be smoothed, but can only take floats so it gets chunky fast
+                //Lerp allows the motion to be smoothed
                 currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionHG, Time.deltaTime * sightSpeed);
                 Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sightsZoom, Time.deltaTime * sightSpeed);
             }
@@ -209,10 +229,23 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
                 currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionSMG, Time.deltaTime * sightSpeed);
                 Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sightsZoom, Time.deltaTime * sightSpeed);
             }
+            else if(currentGun == Shotgun)
+            {
+                currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionSg, Time.deltaTime * sightSpeed);
+                Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sightsZoom, Time.deltaTime * sightSpeed);
+            }
         }
         else
         {
-            currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, hipPosition, Time.deltaTime * sightSpeed);
+            if (currentGun == Shotgun)
+            {
+                currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, hipPositionSg, Time.deltaTime * sightSpeed);
+            }
+            else
+            {
+                currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, hipPosition, Time.deltaTime * sightSpeed);
+            }
+
             if(Camera.main.fieldOfView != defaultZoom)
             {
                 Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, defaultZoom, Time.deltaTime * sightSpeed);

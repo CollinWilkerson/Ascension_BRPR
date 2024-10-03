@@ -75,6 +75,22 @@ public class GameManager : MonoBehaviourPunCallbacks
         Invoke("GoBackToMenu", postGameTime);
     }
 
+
+    public IEnumerator TempDestroy(GameObject g)
+    {
+        string gName = g.name;
+        gName = gName.Replace("(Clone)","");
+        Vector3 gPos = g.transform.position;
+        Quaternion gRot = g.transform.rotation;
+        Debug.Log("Destroyed");
+        PhotonNetwork.Destroy(g);
+
+        yield return new WaitForSeconds(1f);
+
+        Debug.Log("Reinstated");
+        PhotonNetwork.Instantiate(gName, gPos, gRot);
+    }
+
     void GoBackToMenu()
     {
         NetworkManager.instance.ChangeScene("Menu");

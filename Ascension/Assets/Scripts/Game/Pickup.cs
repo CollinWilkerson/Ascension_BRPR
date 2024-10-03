@@ -8,11 +8,12 @@ public enum PickupType
     Health,
     Ammo,
     Sniper,
-    SMG
+    SMG,
+    Shotgun
 }
 
 
-public class Pickup : MonoBehaviour
+public class Pickup : MonoBehaviourPunCallbacks
 {
     public PickupType type;
     public int value;
@@ -43,9 +44,12 @@ public class Pickup : MonoBehaviour
             {
                 player.photonView.RPC("GetGun", player.photonPlayer, "SMG", 1, 300, 0.05f, 20);
             }
+            else if(type == PickupType.Shotgun)
+            {
+                player.photonView.RPC("GetGun", player.photonPlayer, "Shotgun", 50, 50, 0.3f, 20);
+            }
 
-            PhotonNetwork.Destroy(gameObject);
+            StartCoroutine(GameManager.instance.TempDestroy(gameObject));
         }
     }
-
 }
