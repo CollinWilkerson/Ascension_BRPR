@@ -58,8 +58,8 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
         currentGun = Handgun;
         bulletSpawnPos = bulletSpawnPosHG;
         mainCamController = Camera.main.GetComponent<CameraController>();
-        //initialSensitivity = mainCamController.sensX;
-        //sniperSensitivity = initialSensitivity / 4;
+        initialSensitivity = mainCamController.sensX;
+        sniperSensitivity = initialSensitivity / 4;
     }
 
     public void TryShoot()
@@ -221,8 +221,8 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
             {
                 currentGun.transform.localPosition = V3Lerp(currentGun.transform.localPosition, sightPositionS, Time.deltaTime * sightSpeed);
                 Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sniperZoom, Time.deltaTime * sightSpeed);
-                //mainCamController.sensX = sniperSensitivity;
-                //mainCamController.sensY = sniperSensitivity;
+                mainCamController.sensX = sniperSensitivity;
+                mainCamController.sensY = sniperSensitivity;
             }
             else if (currentGun == Smg)
             {
@@ -252,8 +252,8 @@ public class PlayerWeapon : MonoBehaviourPunCallbacks
             }
             if(mainCamController.sensX != initialSensitivity)
             {
-                //mainCamController.sensX = initialSensitivity;
-                //mainCamController.sensY = initialSensitivity;
+                mainCamController.sensX = initialSensitivity;
+                mainCamController.sensY = initialSensitivity;
             }
         }
     }
